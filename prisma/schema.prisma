@@ -1,0 +1,115 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/client" 
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+
+enum WorkspaceRole {
+    ADMIN
+    MEMBER
+}
+
+enum GoalStatus {
+    IN_PROGRESS
+    COMPLETED
+    BLOCKED
+}
+
+enum DigestType {
+    DAILY
+    WEEKLY_RETRO
+}
+
+model User {
+  id           String            @id @default(cuid())
+  email        String            @unique
+  name         String
+  passwordHash String
+  avatarColor  String            @default("#7F77DD")
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  memberships  WorkspaceMember[]
+  standups     Standup[]
+  goals        Goal[]
+}
+
+model Workspace {
+  id        String            @id @default(cuid())
+  name      String
+  slug      String            @unique
+  createdAt DateTime          @default(now())
+  members   WorkspaceMember[]
+  projects  Project[]
+}
+
+model WorkspaceMember {
+  id          String        @id @default(cuid())
+  role        WorkspaceRole @default(MEMBER)
+  joinedAt    DateTime      @default(now())
+  userId      String
+  workspaceId String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+}
+
+model Project {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+  workspaceId String
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  standups    Standup[]
+  goals       Goal[]
+  digests     AiDigest[]
+}
+
+model Standup {
+  id         String   @id @default(cuid())
+  yesterday  String
+  today      String
+  blocker    String?
+  hasBlocker Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  userId     String
+  projectId  String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+}
+
+model Goal {
+  id        String     @id @default(cuid())
+  title     String
+  progress  Int        @default(0)
+  status    GoalStatus @default(IN_PROGRESS)
+  weekStart DateTime
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userId    String
+  projectId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model AiDigest {
+  id         String     @id @default(cuid())
+  content    String
+  digestDate DateTime
+  type       DigestType
+  createdAt  DateTime   @default(now())
+  projectId  String
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@unique([projectId, digestDate, type])
+}
+
+
