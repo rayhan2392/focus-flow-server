@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authRoutes } from "../modules/auth/auth.route.js";
+import { workspaceRoutes } from "../modules/workspace/workspace.route.js";
 
 
 
@@ -9,6 +10,10 @@ const moduleRoutes = [
     {
         path: "/auth",
         route: authRoutes
+    },
+    {
+        path: "/workspace",
+        route: workspaceRoutes
     }
 ]
 

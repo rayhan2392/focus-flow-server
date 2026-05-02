@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../lib/prisma.js";
 import { WorkspaceRole } from "../../generated/client/browser.js";
+import AppError from "../error/AppError.js";
 
 
 
@@ -13,10 +14,12 @@ export const requireRole = (role: WorkspaceRole) =>
                 ? req.params.wId[0]
                 : req.params.workspaceId || req.params.wId;
 
-        if (!workspaceId) return res.status(400).json({ error: "No workspaceId in params" });
+        if (!workspaceId) {
+            throw new AppError(400, "No workspaceId in params");
+        }
 
         if (!req.user) {
-            return res.status(401).json({ error: "Unauthorized" });
+            throw new AppError(401, "Unauthorized");
         }
 
         const membership = await prisma.workspaceMember.findUnique({
@@ -24,7 +27,7 @@ export const requireRole = (role: WorkspaceRole) =>
         });
 
         if (!membership || membership.role !== role) {
-            return res.status(403).json({ error: "Insufficient permissions" });
+            throw new AppError(403, "Insufficient permissions");
         }
 
 

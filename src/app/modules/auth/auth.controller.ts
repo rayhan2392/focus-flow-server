@@ -57,7 +57,7 @@ const logout = catchAsync(async (req, res) => {
         statusCode: 200,
         success: true,
         message: "Logged out successfully",
-        data:null
+        data: null
     })
 })
 
