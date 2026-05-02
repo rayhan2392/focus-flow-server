@@ -1,5 +1,6 @@
 import { Server } from "http";
 import app from "./app.js";
+import { envVars } from "./app/config/env.js";
 
 
 let server:Server;
@@ -7,8 +8,8 @@ let server:Server;
 const startServer = ()=>{
     try {
 
-        server = app.listen(3000, () => {
-    console.log("Server is running on port 3000");
+        server = app.listen(envVars.PORT, () => {
+    console.log(`Server is running on port ${envVars.PORT}`);
 });
         
     } catch (error) {

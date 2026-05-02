@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { globalErrorHandler } from './app/middlewares/globalErrorHandler.js';
 import notFound from './app/middlewares/notFount.js';
+import router from './app/routes/index.js';
 
 
 
@@ -13,7 +14,7 @@ app.use(express.json());
 app.use(cors())
 app.use(cookieParser());
 
-
+app.use("/api/v1",router)
 app.get('/', (req: Request, res: Response) => {
     res.send({
         message: "Server is running...",
