@@ -3,6 +3,8 @@ import { authRoutes } from "../modules/auth/auth.route.js";
 import { workspaceRoutes } from "../modules/workspace/workspace.route.js";
 import { projectRoute } from "../modules/project/project.route.js";
 import { standupRoutes } from "../modules/standup/standup.route.js";
+import path from "node:path";
+import { goalRoute } from "../modules/goal/goal.route.js";
 
 
 
@@ -24,7 +26,11 @@ const moduleRoutes = [
     },
     {
         path: "/standup",
-        route : standupRoutes
+        route: standupRoutes
+    },
+    {
+        path: "/goal",
+        route: goalRoute
     }
 ]
 
