@@ -1,17 +1,22 @@
-import { Server } from "http";
+import { createServer, Server } from "http";
 import app from "./app.js";
 import { envVars } from "./app/config/env.js";
+import { initializeSocket } from "./socket/socket.js";
 
 
-let server:Server;
 
-const startServer = ()=>{
+let server: Server;
+
+const startServer = () => {
     try {
 
-        server = app.listen(envVars.PORT, () => {
-    console.log(`Server is running on port ${envVars.PORT}`);
-});
-        
+        server = createServer(app);
+        const io = initializeSocket(server);
+        app.set("io", io);
+        server.listen(envVars.PORT, () => {
+            console.log(`Server is running on port ${envVars.PORT}`);
+        });
+
     } catch (error) {
         console.log(error);
     }
